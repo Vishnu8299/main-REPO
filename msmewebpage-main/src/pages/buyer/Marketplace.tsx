@@ -6,7 +6,6 @@ import MainSection from "@/components/buyer/MainSection";
 import WhyChooseSection from "@/components/buyer/WhyChooseSection";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
-import News from "@/pages/buyer/News";
 
 const Marketplace = () => {
   const navigate = useNavigate();

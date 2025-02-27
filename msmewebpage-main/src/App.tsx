@@ -102,6 +102,14 @@ const App = () => {
                   } 
                 />
                 <Route 
+                  path="/developer/news" 
+                  element={
+                    <PrivateRoute role="DEVELOPER">
+                      <News />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
                   path="/developer/profile" 
                   element={
                     <PrivateRoute role="DEVELOPER">

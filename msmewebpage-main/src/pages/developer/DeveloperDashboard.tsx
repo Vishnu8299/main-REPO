@@ -10,7 +10,8 @@ import {
   Truck, Search, Activity, Shield, 
   Download, Eye, MessageSquare, Rocket,
   CheckCircle, AlertCircle, TrendingUp,
-  Menu, X, ChevronDown, Cloud
+  Menu, X, ChevronDown, Cloud,
+  Newspaper
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -561,26 +562,12 @@ const DeveloperDashboard = () => {
                   className="w-16 h-16"
                 />
               </motion.a>
-
-              <div className="hidden lg:flex items-center space-x-6">
-                {[
-                  { path: "/developer/dashboard", label: "Overview", icon: Activity },
-                  { path: "/developer/repositories", label: "Repositories", icon: Code },
-                  { path: "/developer/projects", label: "Projects", icon: Package },
-                  { path: "/developer/analytics", label: "Analytics", icon: TrendingUp }
-                ].map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={cn(
-                      "flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors px-2 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
-                      window.location.pathname === item.path && "text-blue-600"
-                    )}
-                  >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </Link>
-                ))}
+              <div className="hidden md:flex items-center space-x-6">
+                <a href="/developer/dashboard" className="text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+                <a href="/developer/news" className="text-gray-700 hover:text-blue-600 transition-colors">New's</a>
+                <a href="/developer/repositories" className="text-gray-700 hover:text-blue-600 transition-colors">Repositories</a>
+                <a href="/developer/hackathons" className="text-gray-700 hover:text-blue-600 transition-colors">Hackathons</a>
+                <a href="/developer/contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
               </div>
             </div>
 
@@ -681,59 +668,6 @@ const DeveloperDashboard = () => {
             </button>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden border-t border-gray-100"
-            >
-              <div className="container mx-auto px-4 py-4 bg-white">
-                <div className="flex flex-col space-y-4">
-                  {/* User Profile Section */}
-                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-medium text-lg">
-                      {user?.name?.charAt(0) || "U"}
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{user?.name}</p>
-                      <p className="text-sm text-gray-500">{user?.email}</p>
-                    </div>
-                  </div>
-
-                  {/* Navigation Items */}
-                  {/* ... existing navigation items ... */}
-
-                  {/* Profile Menu Items */}
-                  <div className="pt-4 border-t border-gray-100">
-                    {profileMenuItems.map((item, index) => (
-                      !item.divider && (
-                        <button
-                          key={index}
-                          onClick={() => {
-                            setIsMenuOpen(false);
-                            if (item.onClick) {
-                              item.onClick();
-                            } else if (item.href) {
-                              navigate(item.href);
-                            }
-                          }}
-                          className="w-full flex items-center space-x-2 px-2 py-2 text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
-                        >
-                          <item.icon className="w-4 h-4" />
-                          <span>{item.label}</span>
-                        </button>
-                      )
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.nav>
 
       {/* Main Content */}
