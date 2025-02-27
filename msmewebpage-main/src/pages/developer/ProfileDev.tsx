@@ -11,10 +11,13 @@ import {
   Calendar, ShoppingBag, CreditCard, Heart, Package, Bell, Settings,
   Truck, History, UserCircle,
   GitBranch, Code, Terminal, FileCode,
-  GitCommit, GitPullRequest, Activity, Lock
+  GitCommit, GitPullRequest, Activity, Lock,
+  Newspaper,
+  TrendingUp
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 const ProfileDev = () => {
   const navigate = useNavigate();
@@ -24,7 +27,8 @@ const ProfileDev = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
-    name: ''
+    name: '',
+    phoneNumber: ''
   });
 
   useEffect(() => {
@@ -52,7 +56,8 @@ const ProfileDev = () => {
   useEffect(() => {
     if (user) {
       setEditForm({
-        name: user.name || ''
+        name: user.name || '',
+        phoneNumber: user.phoneNumber || ''
       });
     }
   }, [user]);
@@ -69,7 +74,8 @@ const ProfileDev = () => {
   const handleEdit = () => setIsEditing(true);
   const handleCancel = () => {
     setEditForm({
-      name: user?.name || ''
+      name: user?.name || '',
+      phoneNumber: user?.phoneNumber || ''
     });
     setIsEditing(false);
   };
@@ -134,11 +140,25 @@ const ProfileDev = () => {
                 alt="RepoMarket Logo" 
                 className="w-16 h-16"
               />
-              <div className="hidden md:flex items-center space-x-6">
-                <Link to="/developer/dashboard" className="text-gray-700 hover:text-blue-600 transition-colors">Home</Link>
-                <Link to="/developer/repositories" className="text-gray-700 hover:text-blue-600 transition-colors">Repositories</Link>
-                <Link to="/developer/projects" className="text-gray-700 hover:text-blue-600 transition-colors">Projects</Link>
-                <Link to="/developer/earnings" className="text-gray-700 hover:text-blue-600 transition-colors">Earnings</Link>
+              <div className="hidden lg:flex items-center space-x-6">
+                {[
+                  { path: "dashboard", href: "/developer/dashboard", label: "Overview", icon: Activity },
+                  { path: "repositories", href: "/developer/repositories", label: "Repositories", icon: Code },
+                  { path: "projects", href: "/developer/projects", label: "Projects", icon: Package },
+                  { path: "analytics", href: "/developer/analytics", label: "Analytics", icon: TrendingUp }
+                ].map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={cn(
+                      "flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors px-2 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+                      window.location.pathname === item.path && "text-blue-600"
+                    )}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
@@ -188,8 +208,27 @@ const ProfileDev = () => {
                   <span>{user?.email}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
+                  <Phone size={18} className="mr-3" />
+                  {isEditing ? (
+                    <Input
+                      value={editForm.phoneNumber}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                      className="w-full"
+                      placeholder="Enter your phone number"
+                    />
+                  ) : (
+                    <span>{user?.phoneNumber || 'No phone number'}</span>
+                  )}
+                </div>
+                <div className="flex items-center text-gray-600">
                   <Calendar size={18} className="mr-3" />
-                  <span>Member since {new Date().toLocaleDateString()}</span>
+                  <span>Member since {user?.createdAt ? new Intl.DateTimeFormat('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }).format(new Date(user.createdAt)) : 'N/A'}</span>
                 </div>
               </div>
 

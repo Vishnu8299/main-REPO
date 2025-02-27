@@ -9,13 +9,15 @@ import Home from "@/pages/Home";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import DeveloperDashboard from "@/pages/developer/DeveloperDashboard";
 import ProfileDev from "@/pages/developer/ProfileDev";
+import NewProject from "@/pages/developer/NewProject";
+import Projects from "@/pages/developer/Projects";
 import Marketplace from "@/pages/buyer/Marketplace";
 import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
 import SplashScreen from '@/components/SplashScreen';
 import BuyerProfile from "./pages/buyer/Profile";
 import News from "@/pages/buyer/News";
-
+import NewsDev from "@/pages/developer/News";
 
 const queryClient = new QueryClient();
 
@@ -94,26 +96,34 @@ const App = () => {
                   } 
                 />
                 <Route 
-                  path="/developer/profileDev" 
-                  element={
-                    <PrivateRoute role="BUYER">
-                      <BuyerProfile />
-                    </PrivateRoute>
-                  } 
-                />
-                <Route 
                   path="/developer/news" 
                   element={
                     <PrivateRoute role="DEVELOPER">
-                      <News />
+                      <NewsDev/>
                     </PrivateRoute>
                   } 
                 />
                 <Route 
-                  path="/developer/profile" 
+                  path="/developer/profileDev" 
                   element={
                     <PrivateRoute role="DEVELOPER">
                       <ProfileDev />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/developer/projects" 
+                  element={
+                    <PrivateRoute role="DEVELOPER">
+                      <Projects />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/developer/projects/new" 
+                  element={
+                    <PrivateRoute role="DEVELOPER">
+                      <NewProject />
                     </PrivateRoute>
                   } 
                 />

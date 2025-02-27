@@ -93,6 +93,11 @@ interface ProfileMenuItem {
   divider?: boolean;
 }
 
+interface User {
+  // ... other fields ...
+  createdAt: string; // ISO date string
+}
+
 const DeveloperDashboard = () => {
   const navigate = useNavigate();
   const { scrollY } = useScroll();
@@ -254,7 +259,7 @@ const DeveloperDashboard = () => {
 
   // Profile menu items
   const profileMenuItems: ProfileMenuItem[] = [
-    { label: "My Profile", href: "/developer/profile", icon: User },
+    { label: "My Profile", href: "/developer/ProfileDev", icon: User },
     { label: "Settings", href: "/developer/settings", icon: Settings },
     { label: "Billing", href: "/developer/billing", icon: CreditCard },
     { label: "Divider", divider: true, icon: null },
@@ -267,27 +272,6 @@ const DeveloperDashboard = () => {
   };
 
   const QuickStats = () => {
-    const cardVariants = {
-      hidden: { opacity: 0, y: 20 },
-      visible: (i: number) => ({
-        opacity: 1,
-        y: 0,
-        transition: {
-          delay: i * 0.1,
-          duration: 0.5,
-          ease: [0.4, 0, 0.2, 1]
-        }
-      }),
-      hover: {
-        scale: 1.05,
-        transition: {
-          type: "spring",
-          stiffness: 400,
-          damping: 10
-        }
-      }
-    };
-
     const stats = [
       { 
         label: "Total Projects", 
@@ -318,6 +302,17 @@ const DeveloperDashboard = () => {
         gradient: "from-orange-500/10 to-orange-500/5"
       }
     ];
+
+    const cardVariants = {
+      hover: {
+        scale: 1.02,
+        transition: {
+          type: "spring",
+          stiffness: 300,
+          damping: 10
+        }
+      }
+    };
 
     return (
       <section className="py-12">
@@ -562,12 +557,27 @@ const DeveloperDashboard = () => {
                   className="w-16 h-16"
                 />
               </motion.a>
-              <div className="hidden md:flex items-center space-x-6">
-                <a href="/developer/dashboard" className="text-gray-700 hover:text-blue-600 transition-colors">Home</a>
-                <a href="/developer/news" className="text-gray-700 hover:text-blue-600 transition-colors">New's</a>
-                <a href="/developer/repositories" className="text-gray-700 hover:text-blue-600 transition-colors">Repositories</a>
-                <a href="/developer/hackathons" className="text-gray-700 hover:text-blue-600 transition-colors">Hackathons</a>
-                <a href="/developer/contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+
+              <div className="hidden lg:flex items-center space-x-6">
+                {[
+                  { path: "dashboard", href: "/developer/dashboard", label: "Overview", icon: Activity },
+                  { path: "repositories", href: "/developer/repositories", label: "Repositories", icon: Code },
+                  { path: "projects", href: "/developer/projects", label: "Projects", icon: Package },
+                  { path: "analytics", href: "/developer/analytics", label: "Analytics", icon: TrendingUp },
+                  { path: "news", href: "/developer/news", label: "News", icon: Newspaper }
+                ].map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={cn(
+                      "flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors px-2 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+                      window.location.pathname === item.path && "text-blue-600"
+                    )}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
               </div>
             </div>
 

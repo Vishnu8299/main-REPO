@@ -11,9 +11,17 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
-  Trash2
+  Trash2,
+  Activity,
+  Code,
+  Package,
+  TrendingUp,
+  MessageSquare,
+  Newspaper
 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 interface NewsArticle {
   title: string;
@@ -267,12 +275,25 @@ const News = () => {
                 alt="RepoMarket Logo" 
                 className="w-16 h-16"
               />
-              <div className="hidden md:flex items-center space-x-6">
-                <a href="/buyer/marketplace" className="text-gray-700 hover:text-blue-600 transition-colors">Home</a>
-                <a href="/buyer/news" className="text-gray-700 hover:text-blue-600 transition-colors">New's</a>
-                <a href="#FeaturedRepos" className="text-gray-700 hover:text-blue-600 transition-colors">Marketplace</a>
-                <a href="#hackathons" className="text-gray-700 hover:text-blue-600 transition-colors">Hackathons</a>
-                <a href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+              <div className="hidden lg:flex items-center space-x-6">
+                {[
+                  { path: "dashboard", href: "/developer/dashboard", label: "Overview", icon: Activity },
+                  { path: "repositories", href: "/developer/repositories", label: "Repositories", icon: Code },
+                  { path: "projects", href: "/developer/projects", label: "Projects", icon: Package },
+                  { path: "analytics", href: "/developer/analytics", label: "Analytics", icon: TrendingUp },
+                ].map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={cn(
+                      "flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors px-2 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+                      window.location.pathname === item.path && "text-blue-600"
+                    )}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
