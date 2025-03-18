@@ -1,70 +1,136 @@
-# JWT Demo Application Testing Guide
+# 🏢 MSME Web Application
 
-## Prerequisites
-1. MongoDB running on localhost:27017
-2. Java 11 or higher
-3. Maven
-4. Postman
+A **full-stack web application** designed for **Micro, Small & Medium Enterprises (MSMEs)**, featuring **secure JWT authentication**, a modern UI, and robust backend services.
 
-## Setup Instructions
+---
 
-1. Start MongoDB
-```bash
-mongod
+## 📁 Project Structure
+
+```
+.
+├── backend/          # Spring Boot Backend with JWT Authentication
+└── frontend/         # Responsive MSME Webpage UI
 ```
 
-2. Start the application
-```bash
-mvn spring-boot:run
-```
+---
 
-3. Import the Postman collection
-- Open Postman
-- Click on "Import"
-- Select the `postman_collection.json` file from this directory
+## 🌐 Frontend (MSME Webpage)
 
-## Testing Flow
+### 🚀 Features
+✅ Modern, **responsive design**
+✅ Interactive UI components
+✅ MSME-focused **content sections**
+✅ **Contact forms** for user inquiries
+✅ Services **showcase & business insights**
 
-1. **Register a new user**
-   - Use the "Register User" request
-   - Fill in the required user details
-   - Send the request
+### 🛠 Tech Stack
+- **HTML5**, **CSS3**, **JavaScript**
+- **Bootstrap** for responsiveness
+- **jQuery** for interactive elements
 
-2. **Login**
-   - Use the "Login" request with the registered credentials
-   - Copy the access token from the response
-   - In Postman, set the environment variable `access_token` with the copied token
+### 📌 Setup Instructions
+1. **Navigate to the frontend directory:**
+   ```bash
+   cd frontend
+   ```
+2. **Open `index.html`** in your web browser.
 
-3. **Test Protected Endpoints**
-   - All other endpoints require the access token
-   - The token is automatically included in the requests through the `{{access_token}}` variable
+---
 
-## Available Endpoints
+## 🔐 Backend (JWT Authentication API)
 
-### Auth
-- POST /api/auth/register - Register new user
-- POST /api/auth/login - Login user
-- POST /api/auth/refresh - Refresh access token
+### 📌 Prerequisites
+- **MongoDB** running on `localhost:27017`
+- **Java 11** or higher
+- **Maven** for dependency management
+- **Postman** for API testing
 
-### Users
-- GET /api/users/profile - Get user profile
-- PUT /api/users/profile - Update user profile
+### ⚙️ Setup Instructions
 
-### Projects
-- GET /api/projects - Get all projects
-- POST /api/projects - Create new project
-- GET /api/projects/{id} - Get project by ID
-- PUT /api/projects/{id} - Update project
-- DELETE /api/projects/{id} - Delete project
+1. **Start MongoDB:**
+   ```bash
+   mongod
+   ```
+2. **Start the Spring Boot application:**
+   ```bash
+   cd backend
+   mvn spring-boot:run
+   ```
+3. **Import Postman collection:**
+   - Open **Postman**
+   - Click on **Import**
+   - Select the `postman_collection.json` file
 
-## Testing Tips
-1. Always check the response status codes
-2. Verify the response body matches the expected format
-3. Test both valid and invalid inputs
-4. For protected endpoints, try accessing without a token to verify security
-5. Test token expiration and refresh flow
+### 📡 API Endpoints
 
-## Common Issues
-1. If you get a 401 error, your token might have expired. Use the login endpoint to get a new token
-2. If MongoDB connection fails, ensure MongoDB is running on port 27017
-3. For email-related features, ensure the email configuration is correct in application.properties
+#### 🔑 Authentication
+- `POST /api/auth/register` → **Register** a new user
+- `POST /api/auth/login` → **User login**
+- `POST /api/auth/refresh` → **Refresh access token**
+
+#### 👤 Users
+- `GET /api/users/profile` → **Retrieve user profile**
+- `PUT /api/users/profile` → **Update user profile**
+
+#### 📂 Projects
+- `GET /api/projects` → **Fetch all projects**
+- `POST /api/projects` → **Create a new project**
+- `GET /api/projects/{id}` → **Fetch project by ID**
+- `PUT /api/projects/{id}` → **Update project details**
+- `DELETE /api/projects/{id}` → **Delete project**
+
+### 🧪 Testing Guidelines
+✅ Check **HTTP response codes**
+✅ Verify **response data format**
+✅ Test **both valid & invalid inputs**
+✅ Try accessing **protected endpoints without a token**
+✅ Validate **token expiration & refresh flow**
+
+### 🔍 Common Issues & Fixes
+❌ **401 Unauthorized?** → Token expired, re-login required.
+❌ **MongoDB connection error?** → Ensure MongoDB is running on **port 27017**.
+❌ **Email configuration issue?** → Verify email settings in `application.properties`.
+
+---
+
+## 🔗 Frontend & Backend Integration
+
+1. **Update frontend API calls** to point to backend endpoints.
+2. **Configure CORS settings** in backend to allow frontend access.
+3. **Set up environment variables** for API URLs.
+
+---
+
+## 🚀 Deployment
+
+### 🌐 Frontend Deployment
+- Deploy static files to **GitHub Pages, Netlify, or Vercel**.
+- Update API URLs in frontend JavaScript to match **backend deployment URL**.
+
+### 🔐 Backend Deployment
+- Deploy on **AWS, Heroku, or any cloud platform**.
+- Configure **MongoDB in the cloud**.
+- Use **environment variables** for production settings.
+
+---
+
+## 🤝 Contributing
+
+1. **Fork** the repository.
+2. **Create** a feature branch.
+3. **Commit** your changes.
+4. **Push** to your branch.
+5. **Create** a **Pull Request**.
+
+---
+
+## 📜 License
+
+This project is **licensed under the MIT License** – see the [LICENSE](LICENSE) file for details.
+
+---
+
+### 🌟 Stay Updated
+📌 **Follow & Star ⭐ this repository** for the latest updates!
+
+💡 **Happy Coding! 🚀**
