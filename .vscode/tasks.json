@@ -1,0 +1,36 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "maven clean install",
+			"command": "mvn",
+			"args": [
+				"clean",
+				"install"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/jwtdemo"
+			},
+			"presentation": {
+				"reveal": "silent"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "maven clean test",
+			"command": "mvn",
+			"args": [
+				"clean",
+				"test",
+				"-X"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/jwtdemo"
+			},
+			"presentation": {
+				"reveal": "silent"
+			}
+		}
+	]
+}
