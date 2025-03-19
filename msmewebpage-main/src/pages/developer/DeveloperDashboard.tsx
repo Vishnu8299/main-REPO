@@ -11,12 +11,12 @@ import {
   Download, Eye, MessageSquare, Rocket,
   CheckCircle, AlertCircle, TrendingUp,
   Menu, X, ChevronDown, Cloud,
-  Newspaper
+  Newspaper, Timer
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import FooterSection from "@/components/home/FooterSection";
-import HeroSection from "@/components/developer/HeroSection";
+import HeroSection from "@/components/home/HeroSection";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -261,7 +261,7 @@ const DeveloperDashboard = () => {
   const profileMenuItems: ProfileMenuItem[] = [
     { label: "My Profile", href: "/developer/ProfileDev", icon: User },
     { label: "Settings", href: "/developer/settings", icon: Settings },
-    { label: "Billing", href: "/developer/billing", icon: CreditCard },
+    { label: "Earnings", href: "/developer/earnings", icon: CreditCard },
     { label: "Divider", divider: true, icon: null },
     { label: "Sign Out", icon: LogOut, onClick: handleLogout }
   ];
@@ -561,7 +561,7 @@ const DeveloperDashboard = () => {
               <div className="hidden lg:flex items-center space-x-6">
                 {[
                   { path: "dashboard", href: "/developer/dashboard", label: "Overview", icon: Activity },
-                  { path: "repositories", href: "/developer/repositories", label: "Repositories", icon: Code },
+                  { path: "opportunities", href: "/developer/opportunities", label: "Opportunities", icon: Timer },
                   { path: "projects", href: "/developer/projects", label: "Projects", icon: Package },
                   { path: "analytics", href: "/developer/analytics", label: "Analytics", icon: TrendingUp },
                   { path: "news", href: "/developer/news", label: "News", icon: Newspaper }

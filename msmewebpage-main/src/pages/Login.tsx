@@ -57,7 +57,7 @@ const Login = () => {
 
       switch (userRole) {
         case 'ADMIN':
-          navigate('/admin-dashboard');
+          navigate('/admin/admin-dashboard');
           break;
         case 'BUYER':
           navigate('/buyer/marketplace');

@@ -4,6 +4,7 @@ import {
   Project,
   Hackathon,
   ApiResponse,
+  ErrorResponse,
   UserUpdateData,
   ProjectCreateData,
   ProjectUpdateData,
@@ -11,8 +12,7 @@ import {
   HackathonUpdateData,
   UserRole,
   LoginResponse,
-  ErrorResponse,
-} from '../types';
+} from '@/types';
 
 class Api {
   private instance: AxiosInstance;
@@ -24,8 +24,6 @@ class Api {
       headers: {
         'Content-Type': 'application/json',
       },
-      timeout: 30000, // Add 30s timeout
-      withCredentials: true, // Enable credentials for CORS
     });
 
     // Add request interceptor to include JWT token
@@ -50,17 +48,6 @@ class Api {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           window.location.href = '/login';
-        } else if (error.response?.status === 403) {
-          // Handle forbidden access
-          window.location.href = '/forbidden';
-        } else if (error.code === 'ECONNABORTED') {
-          // Handle timeout
-          console.error('Request timeout');
-          return Promise.reject(new Error('Request timeout. Please try again.'));
-        } else if (!error.response) {
-          // Handle network errors
-          console.error('Network error');
-          return Promise.reject(new Error('Network error. Please check your connection.'));
         }
         return Promise.reject(error);
       }
@@ -158,16 +145,27 @@ class Api {
     name: string;
     role?: UserRole;
     organization?: string;
+    companyName?: string; // Add support for both organization and companyName
     phoneNumber?: string;
   }): Promise<LoginResponse> {
     try {
-      const response = await this.instance.post<ApiResponse<any>>('/auth/register', {
+      // Transform the data to match backend expectations
+      const requestData = {
         ...userData,
-        role: userData.role?.toUpperCase()
-      });
+        role: userData.role?.toUpperCase(),
+        // Use organization or companyName, ensuring it's present for BUYER role
+        organization: userData.organization || userData.companyName || '',
+      };
 
-      if (!response.data || response.data.status === 'error') {
-        throw new Error(response.data?.message || 'Registration failed');
+      // Additional validation for BUYER role
+      if (requestData.role === 'BUYER' && !requestData.organization) {
+        throw new Error('Organization is required for buyers');
+      }
+
+      const response = await this.instance.post<ApiResponse<any>>('/auth/register', requestData);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Registration failed');
       }
 
       const { data } = response.data;
@@ -181,7 +179,7 @@ class Api {
         email: userData.email,
         name: data.name || userData.name,
         role: data.role as UserRole,
-        organization: userData.organization || '',
+        organization: requestData.organization,
         phoneNumber: userData.phoneNumber || '',
         active: true,
         createdAt: new Date().toISOString(),
@@ -199,7 +197,11 @@ class Api {
       };
     } catch (error) {
       console.error('Registration Error:', error);
+      // Improve error handling
       if (error instanceof Error) {
+        if (error.message.includes('Organization is required')) {
+          throw new Error('Organization name is required for buyer registration');
+        }
         throw error;
       }
       throw this.handleError(error as AxiosError<ErrorResponse>);
@@ -207,19 +209,9 @@ class Api {
   }
 
   async logout(): Promise<void> {
-    try {
-      await this.instance.post('/api/auth/logout');
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      delete this.instance.defaults.headers.common['Authorization'];
-    } catch (error) {
-      console.error('Logout Error:', error);
-      // Still clear local storage even if the API call fails
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      delete this.instance.defaults.headers.common['Authorization'];
-      throw this.handleError(error as AxiosError<ErrorResponse>);
-    }
+    await this.instance.post('/api/auth/logout');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 
   // User API
@@ -240,37 +232,25 @@ class Api {
 
   // Project API
   async getAllProjects(): Promise<Project[]> {
-    try {
-      const response = await this.instance.get<ApiResponse<Project[]>>('/api/projects');
-      return this.handleResponse(response);
-    } catch (error) {
-      throw this.handleError(error as AxiosError<ErrorResponse>);
-    }
+    const response = await this.instance.get('/api/projects');
+    return response.data.data;
   }
 
   async getDeveloperProjects(userId: string): Promise<Project[]> {
-    try {
-      const response = await this.instance.get<ApiResponse<Project[]>>(`/api/projects/developer/${userId}`);
-      return this.handleResponse(response);
-    } catch (error) {
-      throw this.handleError(error as AxiosError<ErrorResponse>);
-    }
+    const response = await this.instance.get(`/projects/developer/${userId}`);
+    return response.data.data;
   }
 
   async searchProjects(technologies?: string[], status?: string): Promise<Project[]> {
-    try {
-      const params = new URLSearchParams();
-      if (technologies) {
-        technologies.forEach(tech => params.append('technologies', tech));
-      }
-      if (status) {
-        params.append('status', status);
-      }
-      const response = await this.instance.get<ApiResponse<Project[]>>(`/api/projects/search?${params.toString()}`);
-      return this.handleResponse(response);
-    } catch (error) {
-      throw this.handleError(error as AxiosError<ErrorResponse>);
+    const params = new URLSearchParams();
+    if (technologies) {
+      technologies.forEach(tech => params.append('technologies', tech));
     }
+    if (status) {
+      params.append('status', status);
+    }
+    const response = await this.instance.get(`/api/projects/search?${params.toString()}`);
+    return response.data.data;
   }
 
   async createProject(projectData: ProjectCreateData): Promise<Project> {
@@ -351,53 +331,6 @@ class Api {
       const response = await this.instance.delete<T>(url);
       return this.handleResponse<T>(response);
     } catch (error) {
-      throw this.handleError(error as AxiosError<ErrorResponse>);
-    }
-  }
-
-  async signUp(data: { 
-    name: string; 
-    email: string; 
-    password: string; 
-    role: UserRole; 
-    companyName?: string;
-    phoneNumber?: string;
-  }): Promise<{ token: string; user: User }> {
-    try {
-      const response = await this.instance.post<ApiResponse<any>>('/auth/register', {
-        ...data,
-        role: data.role?.toUpperCase(),
-        organization: data.companyName // Map companyName to organization for backend
-      });
-
-      if (!response.data || response.data.status === 'error') {
-        throw new Error(response.data?.message || 'Registration failed');
-      }
-
-      const { data: responseData } = response.data;
-      
-      // Construct user object from response data
-      const user: User = {
-        id: responseData.userId,
-        email: data.email,
-        name: data.name,
-        role: responseData.role as UserRole,
-        organization: data.companyName || '',
-        phoneNumber: data.phoneNumber || '',
-        active: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-
-      // Store the token and update headers
-      this.instance.defaults.headers.common['Authorization'] = `Bearer ${responseData.token}`;
-
-      return {
-        token: responseData.token,
-        user
-      };
-    } catch (error) {
-      console.error('SignUp Error:', error);
       throw this.handleError(error as AxiosError<ErrorResponse>);
     }
   }

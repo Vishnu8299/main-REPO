@@ -160,12 +160,6 @@ const Home = () => {
                   className="pl-10 pr-4 py-2 rounded-full bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64 transition-all duration-300 hover:bg-gray-100"
                 />
               </form>
-
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
-              </Button>
-
               <Button 
                 variant="outline" 
                 onClick={() => navigate("/login")}

@@ -15,11 +15,11 @@ interface DashboardLayoutProps {
 }
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Projects', href: '/projects', icon: Code2 },
-  { name: 'Users', href: '/users', icon: Users },
-  { name: 'Hackathons', href: '/hackathons', icon: Trophy },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Dashboard', href: '/admin/admin-dashboard', icon: LayoutDashboard },
+  { name: 'Projects', href: '/admin/projects', icon: Code2 },
+  { name: 'Users', href: '/admin/users', icon: Users },
+  { name: 'Hackathons', href: '/admin/hackathons', icon: Trophy },
+  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
@@ -35,7 +35,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           className="w-64 bg-gray-800 min-h-screen p-4"
         >
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white">CodeMarket</h2>
+            <h2 className="text-2xl font-bold text-white">REPO MARKET</h2>
           </div>
           <nav className="space-y-2">
             {navigation.map((item) => {

@@ -145,7 +145,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     phoneNumber?: string;
   }) => {
     try {
-      const response = await api.signUp(data);
+      const response = await api.register(data);
       // Update auth state with new user data from response
       setUser(response.user);
       setToken(response.token);

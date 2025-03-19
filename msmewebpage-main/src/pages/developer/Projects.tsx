@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
@@ -17,47 +17,79 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+interface Project {
+  _id: string;
+  email: string;
+  name: string;
+  description: string;
+  organization: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
 const Projects = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
-  // Example projects data
-  const projects = [
-    {
-      id: 1,
-      name: "E-commerce Platform",
-      description: "Modern e-commerce solution with React and Node.js",
-      visibility: "public",
-      stars: 128,
-      lastUpdated: "2 hours ago",
-      contributors: 5,
-      status: "active",
-      gradient: "from-blue-500/5 to-blue-500/10"
-    },
-    {
-      id: 2,
-      name: "Analytics Dashboard",
-      description: "Real-time analytics dashboard with data visualization",
-      visibility: "private",
-      stars: 89,
-      lastUpdated: "1 day ago",
-      contributors: 3,
-      status: "completed",
-      gradient: "from-purple-500/5 to-purple-500/10"
-    },
-    {
-      id: 3,
-      name: "Mobile App Template",
-      description: "Production-ready mobile app starter template",
-      visibility: "public",
-      stars: 256,
-      lastUpdated: "3 days ago",
-      contributors: 8,
-      status: "in-progress",
-      gradient: "from-green-500/5 to-green-500/10"
-    }
-  ];
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const userEmail = localStorage.getItem('email'); // Get user email from storage
+        if (!userEmail) {
+          setError('User email not found');
+          setLoading(false);
+          return;
+        }
+
+        // Add retry mechanism
+        const fetchWithRetry = async (attempt: number) => {
+          try {
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+            const response = await fetch(`${baseUrl}/api/projects/developer/${userEmail}`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include'
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || `Server responded with status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setProjects(data.data || []); // Assuming the API returns data in { data: Project[] } format
+            setLoading(false);
+          } catch (error) {
+            console.error(`Attempt ${attempt + 1} failed:`, error);
+            if (attempt < MAX_RETRIES - 1) {
+              setRetryCount(attempt + 1);
+              // Exponential backoff
+              await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+              return fetchWithRetry(attempt + 1);
+            }
+            throw error;
+          }
+        };
+
+        await fetchWithRetry(0);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        setError('Failed to connect to the server. Please check if the server is running and try again.');
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const cardVariants = {
     hover: {
@@ -69,6 +101,22 @@ const Projects = () => {
       }
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 py-12 flex items-center justify-center">
+        <div className="text-xl text-gray-600">Loading projects...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 py-12 flex items-center justify-center">
+        <div className="text-xl text-red-600">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 py-12">
@@ -124,41 +172,33 @@ const Projects = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
             <motion.div
-              key={project.id}
+              key={project._id}
               variants={cardVariants}
               whileHover="hover"
               className={cn(
                 "relative overflow-hidden rounded-xl bg-gradient-to-br backdrop-blur-sm p-6 shadow-lg border border-white/20",
-                project.gradient
+                project.isActive ? "from-green-500/5 to-green-500/10" : "from-gray-500/5 to-gray-500/10"
               )}
-              onClick={() => navigate(`/developer/projects/${project.id}`)}
+              onClick={() => navigate(`/developer/projects/${project._id}`)}
             >
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-gray-900">{project.name}</h3>
-                  {project.visibility === "public" ? (
-                    <Eye className="w-4 h-4 text-gray-600" />
-                  ) : (
-                    <Lock className="w-4 h-4 text-gray-600" />
-                  )}
+                  <Eye className="w-4 h-4 text-gray-600" />
                 </div>
                 <p className="text-gray-600 text-sm mb-4">
-                  {project.description}
+                  {project.description || 'No description provided'}
                 </p>
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center">
-                      <Star className="w-4 h-4 mr-1" />
-                      <span>{project.stars}</span>
-                    </div>
-                    <div className="flex items-center">
                       <Users className="w-4 h-4 mr-1" />
-                      <span>{project.contributors}</span>
+                      <span>{project.organization}</span>
                     </div>
                   </div>
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
-                    <span>{project.lastUpdated}</span>
+                    <span>{new Date(project.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
                 <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -173,4 +213,4 @@ const Projects = () => {
   );
 };
 
-export default Projects; 
+export default Projects;

@@ -11,6 +11,7 @@ import DeveloperDashboard from "@/pages/developer/DeveloperDashboard";
 import ProfileDev from "@/pages/developer/ProfileDev";
 import NewProject from "@/pages/developer/NewProject";
 import Projects from "@/pages/developer/Projects";
+import Analytics from "@/pages/developer/Analytics";
 import Marketplace from "@/pages/buyer/Marketplace";
 import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
@@ -18,6 +19,8 @@ import SplashScreen from '@/components/SplashScreen';
 import BuyerProfile from "./pages/buyer/Profile";
 import News from "@/pages/buyer/News";
 import NewsDev from "@/pages/developer/News";
+import Opportunities from "./pages/developer/Opportunities";
+import Earnings from "./pages/developer/Earnings";
 
 const queryClient = new QueryClient();
 
@@ -79,7 +82,7 @@ const App = () => {
                   } 
                 />
                 <Route 
-                  path="/admin-dashboard" 
+                  path="admin/admin-dashboard" 
                   element={
                     <PrivateRoute role="ADMIN">
                       <AdminDashboard />
@@ -124,6 +127,30 @@ const App = () => {
                   element={
                     <PrivateRoute role="DEVELOPER">
                       <NewProject />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/developer/opportunities" 
+                  element={
+                    <PrivateRoute role="DEVELOPER">
+                      <Opportunities />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/developer/analytics" 
+                  element={
+                    <PrivateRoute role="DEVELOPER">
+                      <Analytics />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/developer/earnings" 
+                  element={
+                    <PrivateRoute role="DEVELOPER">
+                      <Earnings />
                     </PrivateRoute>
                   } 
                 />
